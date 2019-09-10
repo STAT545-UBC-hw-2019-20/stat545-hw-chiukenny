@@ -8,11 +8,14 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(gapminder)
+library(dplyr)
+library(ggplot2)
+df = gapminder
 ```
 
 ## Introduction
 
-We explore the `gapminder` dataset that is available from the `gapminder` R package. The dataset has `r nrow(gapminder)` observations and has `r ncol(gapminder)` variables including
+We explore the `gapminder` dataset that is available from the `gapminder` R package. The dataset has `r nrow(df)` observations and has `r ncol(df)` variables including
 
 * country
 * continent
@@ -20,3 +23,17 @@ We explore the `gapminder` dataset that is available from the `gapminder` R pack
 * life expectancy at birth
 * total population
 * per-capita GDP (in units of international dollars)
+
+The dataset includes observations from `r length(levels(df$continent))` continents. The number of countries included in the dataset is shown in the following plot.
+
+```{r}
+df[c("country", "continent")] %>%
+  distinct() %>%
+  group_by(continent) %>%
+  summarise(num_country = length(continent)) %>%
+  ggplot(aes(x = continent, y = num_country)) +
+    geom_bar(stat = "identity") +
+    geom_text(aes(label = num_country), vjust = -0.3) +
+    labs(title = "Number of Countries by Continent", x = "Continent", y = "Number of Countries") +
+    theme(plot.title = element_text(hjust = 0.5))
+```

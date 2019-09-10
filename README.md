@@ -5,7 +5,7 @@ This repository was created as Kenny Chiu's homework repository for STAT 545A at
 
 ## :two: About me
 
-Hello! My name is *Kenny*, and I'm a first-year MSc. Statistics student here at UBC. I completed my undergraduate degree in Computer Science and Statistics also here at UBC back in 2018. I am now taking [STAT 545A](https://stat545.stat.ubc.ca/) which this repository was created for.
+Hello! My name is **Kenny**, and I'm a first-year MSc. Statistics student here at UBC. I completed my undergraduate degree in Computer Science and Statistics also here at UBC back in 2018. I am now taking [STAT 545A](https://stat545.stat.ubc.ca/) which this repository was created for.
 
 
 ## :three: Navigation
