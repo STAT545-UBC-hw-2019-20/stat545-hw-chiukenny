@@ -7,7 +7,7 @@ This repository was created as Kenny Chiu's homework repository for STAT 545A at
 
 The link to the subfolder for each assignment is provided here for your convenience.
 
-| Assignment | Folder Link |
+| Assignment | Folder |
 | ---: | ---: |
 | 1 | [hw01](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-chiukenny/tree/master/hw01) |
 

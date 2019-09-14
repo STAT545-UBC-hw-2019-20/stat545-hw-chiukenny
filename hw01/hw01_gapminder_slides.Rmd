@@ -44,7 +44,7 @@ df[c("country", "continent")] %>%
 
 ## Population by Continent
 
-We visualize the mean country population per year for each continent. The mean population appears to be increasing over time in each continent.
+We visualize the mean country population per year for each continent/region. The mean population appears to be increasing over time in each continent.
 
 ```{r, echo=FALSE, fig.width=8, fig.height=4}
 df[c("continent", "year", "pop")] %>%
@@ -59,7 +59,7 @@ df[c("continent", "year", "pop")] %>%
 
 ## Population by Country
 
-We visualize the total population over time for each country in Oceania. The population appears to grow at a faster rate in Australia compared to New Zealand.
+We visualize the total population over time for each country in the Oceania region. The population appears to grow at a faster rate in Australia compared to New Zealand.
 
 ```{r, echo=FALSE, fig.width=8, fig.height=4}
 df[c("country", "continent", "year", "pop")] %>%

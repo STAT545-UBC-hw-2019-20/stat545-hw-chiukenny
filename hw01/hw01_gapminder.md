@@ -20,6 +20,7 @@ The dataset includes observations from 5 continents. The number of
 countries included in the dataset is shown in the following plot.
 
 ``` r
+df = gapminder
 df[c("country", "continent")] %>%
   distinct() %>%
   group_by(continent) %>%
@@ -37,9 +38,9 @@ df[c("country", "continent")] %>%
 
 ## Sample Analysis: Population by Continent
 
-We visualize the mean country population per year for each continent. In
-general, we see that the mean population has been increasing over time
-in each continent.
+We visualize the mean country population per year for each
+continent/region. In general, we see that the mean population has been
+increasing over time in each continent.
 
 ``` r
 df[c("continent", "year", "pop")] %>%
@@ -59,8 +60,8 @@ df[c("continent", "year", "pop")] %>%
 ## Sample Analysis: Population by Country
 
 We drill down further and visualize the total population over time for
-each country in Oceania. We see that the population grows at a faster
-rate in Australia compared to New Zealand.
+each country in the Oceania region. We see that the population grows at
+a faster rate in Australia compared to New Zealand.
 
 ``` r
 df[c("country", "continent", "year", "pop")] %>%
