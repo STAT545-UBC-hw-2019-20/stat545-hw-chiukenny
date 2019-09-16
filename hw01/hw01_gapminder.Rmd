@@ -13,7 +13,9 @@ library(ggplot2)
 
 ## Introduction
 
-We explore the `gapminder` dataset that is available from the `gapminder` R package. The dataset has `r nrow(gapminder)` observations and has `r ncol(gapminder)` variables including
+We explore the `gapminder` dataset that is available from the `gapminder` R package. Note that this exploration also uses the `dplyr` and `ggplot2` R packages.
+
+The dataset has `r nrow(gapminder)` observations and has `r ncol(gapminder)` variables including
 
 * country
 * continent
@@ -24,12 +26,16 @@ We explore the `gapminder` dataset that is available from the `gapminder` R pack
 
 The dataset includes observations from `r length(levels(gapminder$continent))` continents. The number of countries included in the dataset is shown in the following plot.
 
-```{r}
+```{r countries_by_continent}
 df = gapminder
+
+# Process data
 df[c("country", "continent")] %>%
   distinct() %>%
   group_by(continent) %>%
   summarise(num_country = length(continent)) %>%
+  
+# Draw and label bar graph
   ggplot(aes(x = continent, y = num_country)) +
     geom_bar(stat = "identity") +
     geom_text(aes(label = num_country), vjust = -0.3) +
@@ -44,10 +50,13 @@ df[c("country", "continent")] %>%
 
 We visualize the mean country population per year for each continent/region. In general, we see that the mean population has been increasing over time in each continent.
 
-```{r}
+```{r, population_by_continent}
+# Process data
 df[c("continent", "year", "pop")] %>%
   group_by(continent, year) %>%
   summarise(mean_total_pop = mean(pop)) %>%
+  
+# Draw and label line graph
   ggplot(aes(x = year, y = mean_total_pop, group = continent)) +
     geom_line(aes(color = continent)) +
     labs(title = "Mean Country Population per Year by Continent",
@@ -62,9 +71,12 @@ df[c("continent", "year", "pop")] %>%
 
 We drill down further and visualize the total population over time for each country in the Oceania region. We see that the population grows at a faster rate in Australia compared to New Zealand.
 
-```{r}
+```{r population_by_country}
+# Process data
 df[c("country", "continent", "year", "pop")] %>%
   filter(continent == "Oceania") %>%
+  
+# Draw and label line graph
   ggplot(aes(x = year, y = pop)) +
     geom_line(aes(color = country)) +
     labs(title = "Oceania Population per Year by Country",

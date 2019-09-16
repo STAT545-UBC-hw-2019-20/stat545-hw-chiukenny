@@ -29,7 +29,7 @@ We explore the `gapminder` dataset that is available from the `gapminder` R pack
 
 The dataset includes observations from `r length(levels(df$continent))` continents. The number of countries included in the dataset is shown below.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.width=8, fig.height=4}
 df[c("country", "continent")] %>%
   distinct() %>%
   group_by(continent) %>%
