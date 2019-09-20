@@ -1,0 +1,26 @@
+---
+title: "Review for Kenny"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+Peer-Review HW-01 for Kenny Chiu
+------------------------------------------------------------------------------
+Topic                       | Excellent          | Satisfactory | Needs Work |
+----------------------------|--------------------|--------------|------------|
+**Coding style**            | Check              |              |            |
+**Coding strategy**         | Check              |              |            |
+**Presentation: graphs**    | Check              |              |            |
+**Presentation: tables**    | Check              |              |            |
+**Achievement, creativity** | Check              |              |            |
+**Ease of access**          | Check              |              |            |
+
+Remarks:
+
+- All contents are very well organized. Everything is clear, clean, and easy to nagivate.
+- Code is concise; formatting is very efficient. 
+- I learned how to make pretty ggplots like Kenny's. 
+- In-depth and accurate analysis. 
