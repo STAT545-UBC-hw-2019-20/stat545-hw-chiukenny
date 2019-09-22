@@ -75,22 +75,24 @@ gapminder %>%
 ```
 
 
-### 1.5 TODO
+### 1.5
 
-We produce a scatterplot of Canada's life expectancy vs log GDP per capita.
+We produce a scatterplot of Canada's life expectancy vs GDP per capita.
 
 ```{r 1.5}
 gapminder %>%
   filter(country == "Canada") %>%
   ggplot(aes(gdpPercap, lifeExp)) +
-  geom_point()
-  #scale_x_log10()
-  #scale_x_log10("GDP per capita", labels = scales::dollar_format())
+  geom_point() +
+  scale_x_log10() +
+  labs(title = "Life Expectancy vs GDP per Capita in Canada",
+       x = "GDP per Capita ($)",
+       y = "Life Expectancy (years)")
 ```
 
 
 
-## Exercise 2: Explore individual variables with `dplyr` TODO
+## Exercise 2: Explore individual variables with `dplyr`
 
 
 ### Exploration: `continent`
@@ -137,7 +139,7 @@ gapminder %>%
   ggplot(aes(lifeExp)) +
   geom_histogram(bins = 40) +
   labs(title = "Histogram of Life Expectancy",
-       x = "Life Expectancy",
+       x = "Life Expectancy (year)",
        y = "Count")
 ```
 
@@ -148,7 +150,7 @@ The distribution can be seen as unimodal with a long left-skew or as bimodal wit
 # summary() outputs a named vector which cannot be converted into a data frame directly.
 # Extract names and values separately and place them into a data frame manually.
 
-lifeExp_sum = summary(gapminder$lifeExp)
+lifeExp_sum = summary(gapminder$lifeExp)[-4]  # Exclude mean
 sum_names = names(lifeExp_sum)
 
 lifeExp_sum = as.vector(lifeExp_sum) %>%
@@ -167,14 +169,61 @@ We see that the life expectancy ranges from 23.6 years to 82.6 years. The median
 ## Exercise 3: Explore various plot types
 
 
-```{r}
-df = gapminder
+### Scatterplot: `pop` versus `lifeExp`
+
+We investigate the relationship between total population and life expectancy. One may expect that both factors are indicators of a country's social well-being, and that greater scores in either variable may indicate a better quality of life. Do countries with higher life expectancy have a greater population? We explore these claims and questions through a scatterplot created from the `gapminder` dataset. The following scatterplot plots the total population against the life expectancy for all countries in 2007.
+
+```{r 3.scatterplot}
+gapminder %>%
+  filter(year == 2007) %>%
+  ggplot(aes(lifeExp, pop)) +
+  geom_point(aes(color = continent)) +
+  scale_y_log10() +
+  labs(title = "Total Population vs Life Expectancy in 2007",
+       x = "Life Expectancy (years)",
+       y = "Total Population",
+       color = "Continent")
 ```
+
+From the scatterplot, we see that countries with higher life expectancy do not necessarily have a greater population. There are countries in Asia with relatively high life expectancy and a very large population. There are countries in Europe that have very high life expectancy and yet have a very small population. Hence there does not seem to be a strong correlation between the two factors.
+
+However, from the plot, we do see that certain continents tend to have higher life expectancy relative to others. Many African countries have lower life expectancy, which is consistent with the fact that many of these countries are developing countries. Thus it seems that life expectancy by itself may be a decent measure of quality of life.
+
+
+### Boxplot: `lifeExp`
+
+Continuing with our investigation on measures of well-being, we compare the life expectancy of countries across different continents in the year 2000 and onwards through the following boxplot.
+
+```{r 3.boxplot}
+gapminder %>%
+  filter(year >= 2000) %>%
+  ggplot(aes(continent, lifeExp)) +
+  geom_boxplot() +
+  labs(title = "Comparing Life Expectancy Across Continents in 2000 to 2007",
+       x = "Continent",
+       y = "Life Expectancy (years)")
+```
+
+The boxplot confirms that there are noticeable differences in life expectancy in different continents. As observed earlier, African countries tend to have lower life expectancy whereas the Oceania region tends to have very high life expectancy. However, there is also a non-trivial amount of within-continent variation as seen in the range of life expectancy in Asia. Thus while life expectancy generally differs across continents, whether it is a reasonable measure of quality of life is arguable and will require further investigation.
+
 
 
 ## Recycling
 
-```{r}
-filter(gapminder, country == c("Rwanda", "Afghanistan"))
+```{r recycling}
+filter(gapminder, country == c("Rwanda", "Afghanistan")) %>%
+  DT::datatable() %>%
+  DT::formatRound(columns = c("lifeExp", "gdpPercap"),
+                  digits = c(1, 2))
 ```
 
+No, the code is not correct as only 12 rows are returned whereas 24 rows should have been returned. What the above code seems to be doing is it first finds a Rwanda observation, finds the next Afghanistan observation, and then cycles through those two steps until the end of the dataset.
+
+The correct way to get the data is shown below.
+
+```{r recycling.correct}
+filter(gapminder, country == "Rwanda" | country == "Afghanistan") %>%
+  DT::datatable() %>%
+  DT::formatRound(columns = c("lifeExp", "gdpPercap"),
+                  digits = c(1, 2))
+```
