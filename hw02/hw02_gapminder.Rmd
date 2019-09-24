@@ -9,7 +9,7 @@ output: html_document
 
 ## Introduction
 
-we explore the `gapminder` dataset available in the `gapminder` R package. This exploration also uses the `tidyverse` R package.
+We explore the `gapminder` dataset available in the `gapminder` R package. This exploration also uses the `tidyverse` R package.
 
 ```{r, echo=FALSE}
 library(gapminder)
