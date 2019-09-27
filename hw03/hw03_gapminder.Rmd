@@ -1,0 +1,144 @@
+---
+title: "Gapminder Exploration Part III"
+author: "Kenny Chiu"
+date: "2019-10-01"
+output:
+  html_document:
+    toc: true
+    css: two_columns.css
+---
+
+
+
+## Introduction
+
+We explore the `gapminder` dataset available in the `gapminder` R package. This exploration also uses the `tidyverse` R package.
+
+```{r, echo=FALSE}
+library(gapminder)
+suppressPackageStartupMessages(library(tidyverse))
+knitr::opts_chunk$set(fig.align = "center")
+```
+
+The CSS used to create the column presentation in this exploration is based on Omar AlOmeir's [CSS file](https://gist.github.com/jennybc/e9e9aba6ba18c72cec26) as well as examples from [w3schools](https://www.w3schools.com/howto/howto_css_two_columns.asp).
+
+
+
+## Task Option 1: Countries with Low Life Expectancy
+
+We report the relative abundance of countries with low life expectancy over time by continent. We define that a country has low life expectancy if its life expectancy is below the median life expectancy across all countries for that year. The following plot and table show the number of countries with low life expectancy by continent over time. Note that **continents with 0 low life expectancy countries for a given year are excluded from both the plot and table**.
+
+```{r task1}
+dat = gapminder %>%
+  group_by(year) %>%
+  filter(lifeExp < median(lifeExp)) %>%
+  group_by(year, continent) %>%
+  summarize(lowLifeExpCount = length(continent))
+```
+
+<div class = row>
+<div class = lcolumn>
+```{r task1.plot}
+dat %>%
+  ggplot(aes(year, lowLifeExpCount, group = continent, colour = continent)) +
+  geom_line(size = 1) +
+  geom_point(size = 3) +
+  labs(title = "Low Life Expectancy Countries by Continent",
+       x = "Year",
+       y = "Number of Low Life Countries",
+       colour = "Continent") +
+  theme_bw()
+```
+</div>
+<div class = rcolumn>
+```{r task1.table}
+dat %>%
+  DT::datatable()
+```
+</div>
+</div>
+
+We see that the majority of countries with low life expectancy are African countries. We also see that the two countries in the Oceania region have never had a low life expectancy since 1952.
+
+The following plot compares the life expectancy of low life expectancy countries to the median life expectancy (black bar) over time. The table shows the life expectancy of these countries. Note that **the points under a single bar are observations for a given year but jittered horizontally to improve visibility**.
+
+```{r task1.1}
+dat = gapminder %>%
+  group_by(year)
+
+datf = dat %>%
+  filter(lifeExp < median(lifeExp))
+```
+
+<div class = row>
+<div class = lcolumn>
+```{r task1.1.plot}
+# Note: would like to label the medians but it is not simple with our current setup
+
+datf %>%
+  ggplot(aes(year, lifeExp, colour = continent)) +
+  geom_jitter(height = 0, width = 1, alpha = 0.5) +
+  stat_summary(data = dat,
+               fun.y = median,
+               fun.ymin = median, fun.ymax = median,
+               colour = "black", size = 0.2,
+               geom = "crossbar") +
+  labs(title = "Below Median Life Expectancy Countries Over Time",
+       x = "Year",
+       y = "Life Expectancy (years)",
+       colour = "Continent") +
+  theme_bw()
+```
+</div>
+<div class = rcolumn>
+```{r task1.1.table}
+datf %>%
+  select(year, continent, country, lifeExp) %>%
+  DT::datatable() %>%
+  DT::formatRound(columns = c("lifeExp"), digits = 2)
+```
+</div>
+</div>
+
+We see that many of the African countries have a life expectancy well-below the median life expectancy, whereas the majority of other low life expectancy countries are relatively closer to the median.
+
+
+
+## Task Option 2: Range of GDP per Capita for Each Continent
+
+We get the minimum and maximum of GDP per capita for all continents. TODO use data from tibble to make plot
+
+<div class = row>
+<div class = lcolumn>
+```{r task2.plot}
+gapminder %>%
+  ggplot(aes(continent, gdpPercap, colour = continent)) +
+  geom_boxplot() +
+  coord_flip() +
+  scale_y_log10(labels = scales::dollar_format()) +
+  stat_summary(aes(label = round(10^..y..)), fun.y = min, geom = "text", size = 3, vjust = -0.5) +
+  stat_summary(aes(label = round(10^..y..)), fun.y = max, geom = "text", size = 3, vjust = -0.5) +
+  labs(title = "Range of GDP per Capita per Continent",
+       x = "Continent",
+       y = "GDP per Capita") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+
+</div>
+<div class = rcolumn>
+```{r task2.table}
+gapminder %>%
+  group_by(continent) %>%
+  filter(gdpPercap == max(gdpPercap) | gdpPercap == min(gdpPercap)) %>%
+  select(continent, country, gdpPercap) %>%
+  arrange(continent, gdpPercap, country) %>%
+  DT::datatable() %>%
+  DT::formatRound(columns = c("gdpPercap"), digits = 2)
+```
+</div>
+</div>
+
+
+
+## Task Option
