@@ -10,6 +10,12 @@ output:
 
 
 
+## Navigation
+
+Back to the [repository](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-chiukenny/tree/master/hw03).
+
+
+
 ## Introduction
 
 We explore the `gapminder` dataset available in the `gapminder` R package. This exploration also uses the `tidyverse` R package.
@@ -20,7 +26,7 @@ suppressPackageStartupMessages(library(tidyverse))
 knitr::opts_chunk$set(fig.align = "center")
 ```
 
-The CSS used to create the column presentation in this exploration is based on Omar AlOmeir's [CSS file](https://gist.github.com/jennybc/e9e9aba6ba18c72cec26) as well as examples from [w3schools](https://www.w3schools.com/howto/howto_css_two_columns.asp).
+The CSS used to create the column presentation in this exploration is based on Omar AlOmeir's [CSS file](https://gist.github.com/jennybc/e9e9aba6ba18c72cec26) as well as examples from [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
 
 
 
@@ -34,26 +40,31 @@ dat = gapminder %>%
   filter(lifeExp < median(lifeExp)) %>%
   group_by(year, continent) %>%
   summarize(lowLifeExpCount = length(continent))
+
+# Code for plot
+t1plot = dat %>%
+  ggplot(aes(year, lowLifeExpCount, group = continent, colour = continent)) +
+  geom_line(size = 1) +
+  geom_point(size = 5) +
+  labs(title = "Low Life Expectancy Countries by Continent",
+       x = "Year", y = "Number of Low Life Countries",
+       colour = "Continent") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 16))
+
+# Code for table
+t1table = DT::datatable(dat)
 ```
 
 <div class = row>
-<div class = lcolumn>
-```{r task1.plot}
-dat %>%
-  ggplot(aes(year, lowLifeExpCount, group = continent, colour = continent)) +
-  geom_line(size = 1) +
-  geom_point(size = 3) +
-  labs(title = "Low Life Expectancy Countries by Continent",
-       x = "Year",
-       y = "Number of Low Life Countries",
-       colour = "Continent") +
-  theme_bw()
+<div class = lcolumn style = "--width: 59%;">
+```{r task1.plot, echo = FALSE, fig.height = 7}
+t1plot
 ```
 </div>
-<div class = rcolumn>
-```{r task1.table}
-dat %>%
-  DT::datatable()
+<div class = rcolumn style = "--width: 39%;">
+```{r task1.table, echo = FALSE}
+t1table
 ```
 </div>
 </div>
@@ -67,35 +78,37 @@ dat = gapminder %>%
   group_by(year)
 
 datf = dat %>%
-  filter(lifeExp < median(lifeExp))
+  filter(lifeExp < median(lifeExp)) %>%
+  select(year, continent, country, lifeExp)
+
+# Code for plot
+# Note: would like to label the medians but it is not simple with our current setup
+t1plot2 = datf %>%
+  ggplot(aes(year, lifeExp, colour = continent)) +
+  geom_jitter(height = 0, width = 1, size = 2, alpha = 0.7) +
+  stat_summary(data = dat, fun.y = median, fun.ymin = median, fun.ymax = median,
+               colour = "black", size = 0.4, geom = "crossbar") +
+  labs(title = "Below Median Life Expectancy Countries Over Time",
+       x = "Year", y = "Life Expectancy (years)",
+       colour = "Continent") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 16))
+
+# Code for table
+t1table2 = datf %>%
+  DT::datatable() %>%
+  DT::formatRound(columns = c("lifeExp"), digits = 2)
 ```
 
 <div class = row>
-<div class = lcolumn>
-```{r task1.1.plot}
-# Note: would like to label the medians but it is not simple with our current setup
-
-datf %>%
-  ggplot(aes(year, lifeExp, colour = continent)) +
-  geom_jitter(height = 0, width = 1, alpha = 0.5) +
-  stat_summary(data = dat,
-               fun.y = median,
-               fun.ymin = median, fun.ymax = median,
-               colour = "black", size = 0.2,
-               geom = "crossbar") +
-  labs(title = "Below Median Life Expectancy Countries Over Time",
-       x = "Year",
-       y = "Life Expectancy (years)",
-       colour = "Continent") +
-  theme_bw()
+<div class = lcolumn style = "--width: 49%;">
+```{r task1.1.plot, echo = FALSE, fig.height = 8}
+t1plot2
 ```
 </div>
-<div class = rcolumn>
-```{r task1.1.table}
-datf %>%
-  select(year, continent, country, lifeExp) %>%
-  DT::datatable() %>%
-  DT::formatRound(columns = c("lifeExp"), digits = 2)
+<div class = rcolumn style = "--width: 49%;">
+```{r task1.1.table, echo = FALSE}
+t1table2
 ```
 </div>
 </div>
@@ -106,39 +119,90 @@ We see that many of the African countries have a life expectancy well-below the 
 
 ## Task Option 2: Range of GDP per Capita for Each Continent
 
-We get the minimum and maximum of GDP per capita for all continents. TODO use data from tibble to make plot
+The following plot and table show the minimum and maximum of GDP per capita for all continents.
+
+```{r task2}
+# Code for plot
+t2plot = gapminder %>%
+  ggplot(aes(continent, gdpPercap, colour = continent)) +
+  geom_boxplot(size = 1.5) +
+  scale_y_log10(labels = scales::dollar_format()) +
+  stat_summary(aes(label = round(10^..y..)), fun.y = min, geom = "text", size = 6, vjust = 1.3) +
+  stat_summary(aes(label = round(10^..y..)), fun.y = max, geom = "text", size = 6, vjust = -0.3) +
+  labs(title = "Range of GDP per Capita per Continent", x = "Continent", y = "GDP per Capita") +
+  theme_bw() +
+  theme(legend.position = "none", title = element_text(size = 16),
+        axis.text = element_text(size = 16), axis.title = element_text(size = 20))
+
+# Code for table
+t2table = gapminder %>%
+  group_by(continent) %>%
+  summarize(minGdpCap = min(gdpPercap), minCountry = country[gdpPercap == minGdpCap],
+            maxGdpCap = max(gdpPercap), maxCountry = country[gdpPercap == maxGdpCap]) %>%
+  select(continent, minCountry, minGdpCap, maxCountry, maxGdpCap) %>%
+  DT::datatable() %>%
+  DT::formatRound(columns = c("minGdpCap", "maxGdpCap"), digits = 2)
+```
 
 <div class = row>
-<div class = lcolumn>
-```{r task2.plot}
-gapminder %>%
-  ggplot(aes(continent, gdpPercap, colour = continent)) +
-  geom_boxplot() +
-  coord_flip() +
-  scale_y_log10(labels = scales::dollar_format()) +
-  stat_summary(aes(label = round(10^..y..)), fun.y = min, geom = "text", size = 3, vjust = -0.5) +
-  stat_summary(aes(label = round(10^..y..)), fun.y = max, geom = "text", size = 3, vjust = -0.5) +
-  labs(title = "Range of GDP per Capita per Continent",
-       x = "Continent",
-       y = "GDP per Capita") +
+<div class = lcolumn style = "--width: 34%;">
+```{r task2.plot, echo = FALSE, fig.height = 7.5}
+t2plot
+```
+</div>
+<div class = rcolumn style = "--width: 64%;">
+```{r task2.table, echo = FALSE}
+t2table
+```
+</div>
+</div>
+
+We see that Asia has the widest range of GDP per capita with Myanmar having the lowest GDP and Kuwait having the highest in Asia. Across all continents and years, the Democratic Republic of the Congo has the lowest GDP per capita and Kuwait has the highest.
+
+
+
+## Task Option 4: Mean Life Expectancy Weighted by Population
+
+The following plot and table show the mean life expectancy weighted by population in comparison to the unweighted mean life expectancy over time. Also plotted are the life expectancy of countries **for a given year but jittered horizontally to improve visibility**.
+
+```{r task3}
+dat = gapminder %>%
+  group_by(year) %>%
+  summarize(meanLifeExp = mean(lifeExp),
+            wMeanLifeExp = weighted.mean(lifeExp, pop))
+
+# Code for plot
+# Manual legend code from https://aosmith.rbind.io/2018/07/19/manual-legends-ggplot2/
+t3plot = dat %>%
+  ggplot(aes(year, wMeanLifeExp)) +
+  geom_jitter(aes(year, lifeExp, size = pop), data = gapminder, height = 0, width = 1, alpha = 0.15) +
+  geom_point(aes(year, meanLifeExp, colour = "blue"), size = 6, alpha = 0.7) +
+  geom_point(aes(colour = "red"), size = 5, alpha = 0.8) +
+  labs(title = "Life Expectancy by Year",
+       x = "Year", y = "Life Expectancy (years)",
+       size = "Population") +
+  scale_colour_identity(name = "Indicator", breaks = c("red", "blue"), labels = c("Weighted Mean", "Mean"),
+                        guide = "legend") +
   theme_bw() +
-  theme(legend.position = "none")
-```
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 16))
 
-</div>
-<div class = rcolumn>
-```{r task2.table}
-gapminder %>%
-  group_by(continent) %>%
-  filter(gdpPercap == max(gdpPercap) | gdpPercap == min(gdpPercap)) %>%
-  select(continent, country, gdpPercap) %>%
-  arrange(continent, gdpPercap, country) %>%
+# Code for table
+t3table = dat %>%
   DT::datatable() %>%
-  DT::formatRound(columns = c("gdpPercap"), digits = 2)
+  DT::formatRound(columns = c("meanLifeExp", "wMeanLifeExp"), digits = 2)
+```
+
+<div class = row>
+<div class = lcolumn style = "--width: 49%;">
+```{r task3.plot, echo = FALSE, fig.height = 7.5}
+t3plot
+```
+</div>
+<div class = rcolumn style = "--width: 49%;">
+```{r task3.table, echo = FALSE}
+t3table
 ```
 </div>
 </div>
 
-
-
-## Task Option
+We see that starting in the 1960's, the weighted mean life expectancy is consistently greater than the unweighted mean. This may be interpreted as the life expectancy in countries with greater populations tend to be higher than countries with smaller populations or conversely, that countries with higher life expectancy have greater populations than countries with lower life expectancy.

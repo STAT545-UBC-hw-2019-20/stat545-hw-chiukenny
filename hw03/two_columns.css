@@ -1,11 +1,11 @@
 .lcolumn {
   float: left;
-  max-width: 49%;
+  max-width: var(--width);
 }
 
 .rcolumn {
   float: right;
-  max-width: 49%;
+  max-width: var(--width);
 }
 
 .row {
