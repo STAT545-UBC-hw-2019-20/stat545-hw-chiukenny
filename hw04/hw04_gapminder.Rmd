@@ -1,0 +1,56 @@
+---
+title: "Gapminder Exploration Part IV"
+author: "Kenny Chiu"
+date: "2019-10-08"
+output:
+  html_document:
+    toc: true
+---
+
+
+
+## Navigation
+
+Back to the [repository](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-chiukenny/tree/master/hw04).
+
+
+
+## Introduction
+
+We explore the `gapminder` dataset available in the `gapminder` R package. This exploration also uses the `tidyverse` R package.
+
+```{r, echo=FALSE}
+library(gapminder)
+suppressPackageStartupMessages(library(tidyverse))
+knitr::opts_chunk$set(fig.align = "center")
+```
+
+
+
+## Univariate Option 1
+
+```{r ex1.1}
+dat = gapminder %>%
+  filter(country == "Canada" | country == "Taiwan") %>%
+  select(country, year, lifeExp) %>%
+  pivot_wider(id_cols = year,
+              names_from = country,
+              values_from = lifeExp,
+              names_prefix = "lifeExp")
+
+DT::datatable(dat)
+```
+
+```{r ex1.2}
+dat %>%
+  ggplot(aes(lifeExpCanada, lifeExpTaiwan)) +
+  geom_point()
+```
+
+```{r ex1.3}
+dat %>%
+  pivot_longer(cols = c(lifeExpCanada, lifeExpTaiwan),
+               names_to = "country",
+               names_prefix = "lifeExp",
+               values_to = "lifeExp")
+```
