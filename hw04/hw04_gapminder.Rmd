@@ -29,6 +29,8 @@ knitr::opts_chunk$set(fig.align = "center")
 
 ## Univariate Option 1
 
+### Widen
+
 We pivot the `gapminder` dataset so that it is one row per year with life expectancy columns for Canada and Taiwan.
 
 ```{r ex1.1}
@@ -42,6 +44,8 @@ dat = gapminder %>%
 
 DT::datatable(dat)
 ```
+
+### Scatterplot
 
 We now produce a scatterplot of the life expectancy in Taiwan against the life expectancy in Canada.
 
@@ -64,6 +68,8 @@ dat %>%
 
 We see that the life expectancy in Taiwan has been consistently below the life expectancy in Canada between 1952 to 2007. Life expectancies in both Canada and Taiwan have been increasing over time.
 
+### Lengthen
+
 We re-pivot the dataset back to the way it originally was.
 
 ```{r ex1.3}
@@ -79,6 +85,10 @@ dat %>%
 
 ## Multivariate Option 1
 
+### Widen
+
+We pivot the `gapminder` dataset so that it is one row per year with life expectancy and GDP per capita columns for Canada and Taiwan.
+
 ```{r ex2.1}
 dat = gapminder %>%
   filter(country == "Canada" | country == "Taiwan") %>%
@@ -90,6 +100,10 @@ dat = gapminder %>%
 
 DT::datatable(dat)
 ```
+
+### Lengthen
+
+We re-pivot the dataset back to the way it originally was.
 
 ```{r ex2.2}
 dat %>%
@@ -103,12 +117,45 @@ dat %>%
 
 ## Exercise 3: Table Joins
 
-```{r ex3}
+We read in the following datasets:
+
+* `guest`: the guestlist with variables to indicate ordered meals and event attendance status
+* `email`: the email addresses for each group of guests
+
+```{r ex3, message = FALSE}
 guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
 email <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
 ```
 
-```{r ex3.1}
+### Add emails
 
+We add the email addresses from `email` to each guest in `guest`. We first separate the groups of guests in `email` before doing the join.
+
+```{r ex3.1}
+sep_email = email %>%
+  separate_rows(guest, sep = ", ")
+
+guest %>%
+  left_join(sep_email, by = c("name" = "guest")) %>%
+  DT::datatable(options = list(scrollX = TRUE))
 ```
 
+### Uninvited with emails
+
+We check who we have emails for but are not on the guestlist.
+
+```{r ex3.2}
+sep_email %>%
+  anti_join(guest, by = c("guest" = "name")) %>%
+  DT::datatable()
+```
+
+### All guests
+
+We add to the guestlist those who we have emails for but are not on the guestlist.
+
+```{r ex3.3}
+guest %>%
+  full_join(sep_email, by = c("name" = "guest")) %>%
+  DT::datatable(options = list(scrollX = TRUE))
+```
