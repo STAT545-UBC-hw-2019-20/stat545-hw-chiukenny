@@ -29,7 +29,7 @@ knitr::opts_chunk$set(fig.align = "center")
 
 ## Univariate Option 1
 
-### Widen
+### 1. Widen
 
 We pivot the `gapminder` dataset so that it is one row per year with life expectancy columns for Canada and Taiwan.
 
@@ -45,7 +45,7 @@ dat = gapminder %>%
 DT::datatable(dat)
 ```
 
-### Scatterplot
+### 2. Scatterplot
 
 We now produce a scatterplot of the life expectancy in Taiwan against the life expectancy in Canada.
 
@@ -68,7 +68,7 @@ dat %>%
 
 We see that the life expectancy in Taiwan has been consistently below the life expectancy in Canada between 1952 to 2007. Life expectancies in both Canada and Taiwan have been increasing over time.
 
-### Lengthen
+### 3. Lengthen
 
 We re-pivot the dataset back to the way it originally was.
 
@@ -85,7 +85,7 @@ dat %>%
 
 ## Multivariate Option 1
 
-### Widen
+### 1. Widen
 
 We pivot the `gapminder` dataset so that it is one row per year with life expectancy and GDP per capita columns for Canada and Taiwan.
 
@@ -101,7 +101,7 @@ dat = gapminder %>%
 DT::datatable(dat)
 ```
 
-### Lengthen
+### 2. Lengthen
 
 We re-pivot the dataset back to the way it originally was.
 
@@ -127,7 +127,7 @@ guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/maste
 email <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
 ```
 
-### Add emails
+### 1. Add emails
 
 We add the email addresses from `email` to each guest in `guest`. We first separate the groups of guests in `email` before doing the join.
 
@@ -140,7 +140,7 @@ guest %>%
   DT::datatable(options = list(scrollX = TRUE))
 ```
 
-### Uninvited with emails
+### 2. Uninvited with emails
 
 We check who we have emails for but are not on the guestlist.
 
@@ -150,7 +150,7 @@ sep_email %>%
   DT::datatable()
 ```
 
-### All guests
+### 3. All guests
 
 We add to the guestlist those who we have emails for but are not on the guestlist.
 
