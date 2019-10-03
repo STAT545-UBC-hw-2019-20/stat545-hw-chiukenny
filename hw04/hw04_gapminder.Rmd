@@ -29,28 +29,86 @@ knitr::opts_chunk$set(fig.align = "center")
 
 ## Univariate Option 1
 
+We pivot the `gapminder` dataset so that it is one row per year with life expectancy columns for Canada and Taiwan.
+
 ```{r ex1.1}
 dat = gapminder %>%
   filter(country == "Canada" | country == "Taiwan") %>%
   select(country, year, lifeExp) %>%
   pivot_wider(id_cols = year,
               names_from = country,
-              values_from = lifeExp,
-              names_prefix = "lifeExp")
+              names_prefix = "lifeExp_",
+              values_from = lifeExp)
 
 DT::datatable(dat)
 ```
 
+We now produce a scatterplot of the life expectancy in Taiwan against the life expectancy in Canada.
+
 ```{r ex1.2}
+axis_lim = c(min(dat$lifeExp_Canada, dat$lifeExp_Taiwan),
+             max(dat$lifeExp_Canada, dat$lifeExp_Taiwan))
+
 dat %>%
-  ggplot(aes(lifeExpCanada, lifeExpTaiwan)) +
-  geom_point()
+  ggplot(aes(lifeExp_Canada, lifeExp_Taiwan)) +
+  geom_point(aes(colour = "red"), size = 3) +
+  geom_abline(linetype = 2, alpha = 0.3) +
+  geom_text(aes(label = year), size = 3, hjust = 1.3) +
+  coord_fixed(xlim = axis_lim, ylim = axis_lim) +
+  labs(title = "Life Expectancy (years) of Taiwan against Canada",
+       x = "Life Expectancy in Canada",
+       y = "Life Expectancy in Taiwan") +
+  theme_bw() +
+  theme(legend.position = "none")
 ```
+
+We see that the life expectancy in Taiwan has been consistently below the life expectancy in Canada between 1952 to 2007. Life expectancies in both Canada and Taiwan have been increasing over time.
+
+We re-pivot the dataset back to the way it originally was.
 
 ```{r ex1.3}
 dat %>%
-  pivot_longer(cols = c(lifeExpCanada, lifeExpTaiwan),
+  pivot_longer(cols = c(lifeExp_Canada, lifeExp_Taiwan),
                names_to = "country",
-               names_prefix = "lifeExp",
-               values_to = "lifeExp")
+               names_prefix = "lifeExp_",
+               values_to = "lifeExp") %>%
+  DT::datatable()
 ```
+
+
+
+## Multivariate Option 1
+
+```{r ex2.1}
+dat = gapminder %>%
+  filter(country == "Canada" | country == "Taiwan") %>%
+  select(year, country, lifeExp, gdpPercap) %>%
+  pivot_wider(id_cols = year,
+              names_from = country,
+              names_sep = "_",
+              values_from = c(lifeExp, gdpPercap))
+
+DT::datatable(dat)
+```
+
+```{r ex2.2}
+dat %>%
+  pivot_longer(cols = -year,
+               names_to = c(".value", "country"),
+               names_sep = "_") %>%
+  DT::datatable()
+```
+
+
+
+## Exercise 3: Table Joins
+
+```{r ex3}
+guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
+email <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
+```
+
+```{r ex3.1}
+
+```
+
