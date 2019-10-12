@@ -1,0 +1,102 @@
+---
+title: "Assignment 5: Factor and figure management"
+author: "Kenny Chiu"
+date: "2019-10-17"
+output:
+  html_document:
+    toc: true
+---
+
+
+
+## Navigation
+
+Back to the [repository](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-chiukenny/tree/master/hw05).
+
+
+
+## Introduction
+
+TODO
+
+We explore the `gapminder` dataset available in the `gapminder` R package. This exploration also uses the `tidyverse` R package.
+
+```{r, echo}
+library(gapminder)
+suppressPackageStartupMessages(library(tidyverse))
+knitr::opts_chunk$set(fig.align = "center")
+```
+
+
+
+## Exercise 1: `here::here`
+
+
+
+## Exercise 2: Factor management
+
+```{r ex2.verify_factor}
+class(gapminder$continent)
+```
+
+```{r ex2.drop_levels}
+gapminder %>%
+  group_by(continent) %>%
+  summarize(temp = mean(lifeExp), temp2 = mean(pop), temp3 = mean(gdpPercap))
+
+nrow(gapminder)
+
+gp_drop_ocn = gapminder %>%
+  filter(continent != "Oceania")
+
+nrow(gp_drop_ocn)
+levels(gp_drop_ocn$continent)
+
+gp_drop_ocn = gp_drop_ocn %>%
+  mutate(continent = fct_drop(gp_drop_ocn$continent))
+
+levels(gp_drop_ocn$continent)
+```
+
+```{r ex2.reorder_levels}
+trimmed.mean = function(x)
+{
+  return(mean(x, trim = 0.1))
+}
+
+gp_reorder = gp_drop_ocn %>%
+  mutate(continent = fct_reorder(continent, pop, trimmed.mean))
+levels(gp_reorder$continent)
+```
+```{r ex2.relevel_factor}
+gp_relevel = gp_reorder %>%
+  mutate(continent = fct_relevel(continent, "Americas"))
+levels(gp_relevel$continent)
+```
+```{r ex2.plot_relevel}
+
+```
+
+
+
+## Exercise 3: File input/output
+
+```{r ex3.manipulate}
+
+```
+
+```{r ex3.write}
+
+```
+
+```{r ex3.read}
+
+```
+
+
+
+## Exercise 4: Visualization design
+
+
+
+## Exercise 5: Writing figures to file

@@ -13,6 +13,7 @@ The link to the subfolder for each assignment is provided here for your convenie
 | 2 | [hw02](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-chiukenny/tree/master/hw02) |
 | 3 | [hw03](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-chiukenny/tree/master/hw03) |
 | 4 | [hw04](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-chiukenny/tree/master/hw04) |
+| 5 | [hw05](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-chiukenny/tree/master/hw05) |
 
 
 ## :three: About me
