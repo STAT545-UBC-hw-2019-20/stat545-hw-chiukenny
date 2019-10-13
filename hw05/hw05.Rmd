@@ -7,6 +7,10 @@ output:
     toc: true
 ---
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(fig.align = "center")
+```
+
 
 
 ## Navigation
@@ -17,48 +21,80 @@ Back to the [repository](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-ch
 
 ## Introduction
 
-TODO
+We use the `gapminder` dataset as an example to explore concepts in data portability, collaboration and dissemination. We use the `tidyverse` R package to carry out these tasks. We load these libraries as an initialization step.
 
-We explore the `gapminder` dataset available in the `gapminder` R package. This exploration also uses the `tidyverse` R package.
-
-```{r, echo}
+```{r, message = FALSE}
 library(gapminder)
-suppressPackageStartupMessages(library(tidyverse))
-knitr::opts_chunk$set(fig.align = "center")
+library(tidyverse)
+
+# Other libraries used
+library(ggridges)
+library(scales)
 ```
 
 
 
 ## Exercise 1: `here::here`
 
+The `here::here` function has three main advantages over other approaches used for setting paths.
+
+1. **It makes it easier to use sub-directories in projects**
+
+`here::here` automatically detects the root directory and if used in a RStudio project, `here::here` uses the project root. This means that you only need to specify the path from the project root to the sub-directory instead of specifying the full absolute path.
+
+2. **It makes it easier for other people to your code**
+
+When working with others, the collaborators will generally have a local copy of the project. Because you only need to specify the path from the project root, `here::here` will work regardless of where the local copy of the project is stored for each collaborator.
+
+3. **It writes paths safely across operating systems**
+
+The paths that `here::here` takes in as arguments are platform-independent. This means that even if your collaborators work on different operating systems, `here::here` will still work without needing to be modified.
+
 
 
 ## Exercise 2: Factor management
+
+### Drop Oceania
+
+We explore the `continent` variable in the `gapminder` dataset. We first verify that `continent` is a factor.
 
 ```{r ex2.verify_factor}
 class(gapminder$continent)
 ```
 
-```{r ex2.drop_levels}
-gapminder %>%
-  group_by(continent) %>%
-  summarize(temp = mean(lifeExp), temp2 = mean(pop), temp3 = mean(gdpPercap))
+We drop the level "Oceania" from `continent` and observe the number of rows and levels before and after the drop.
 
+```{r ex2.drop_levels.1}
 nrow(gapminder)
+```
 
+```{r ex2.drop_levels.2}
+levels(gapminder$continent)
+```
+
+
+There are `r nrow(gapminder)` rows and `r nlevels(gapminder$continent)` `continent` levels before the drop.
+
+```{r ex2.drop_levels.3}
 gp_drop_ocn = gapminder %>%
-  filter(continent != "Oceania")
+  filter(continent != "Oceania") %>%
+  mutate(continent = fct_drop(continent))
 
 nrow(gp_drop_ocn)
-levels(gp_drop_ocn$continent)
+```
 
-gp_drop_ocn = gp_drop_ocn %>%
-  mutate(continent = fct_drop(gp_drop_ocn$continent))
-
+```{r ex2.drop_levels.4}
 levels(gp_drop_ocn$continent)
 ```
 
-```{r ex2.reorder_levels}
+After the drop, there are now `r nrow(gp_drop_ocn)` rows and `r nlevels(gp_drop_ocn$continent)` levels.
+
+### Reorder `continent`
+
+We now look to reorder the levels of `continent` based on the trimmed mean (10% off each end) total population in increasing order. We use the `forcats` package in the `tidyverse` library to do so.
+
+```{r ex2.reorder_levels.1}
+# Define a trimmed mean function with a set trim value
 trimmed.mean = function(x)
 {
   return(mean(x, trim = 0.1))
@@ -66,16 +102,64 @@ trimmed.mean = function(x)
 
 gp_reorder = gp_drop_ocn %>%
   mutate(continent = fct_reorder(continent, pop, trimmed.mean))
+
 levels(gp_reorder$continent)
 ```
-```{r ex2.relevel_factor}
+
+The levels of `continent` has changed from [`r levels(gp_drop_ocn$continent)`] to [`r levels(gp_reorder$continent)`]. We check the trimmed mean total population to make sure that the new order of levels is correct.
+
+```{r ex2.reorder_levels.2}
+gp_reorder %>%
+  group_by(continent) %>%
+  summarize(trimMeanPop = trimmed.mean(pop)) %>%
+  knitr::kable()
+```
+
+### Re-level `continent`
+
+We now look to re-level the data so that the level "Americas" is first. We first look at the data prior to the re-level.
+
+```{r ex2.relevel_factor.1}
+gp_reorder %>%
+  arrange(continent) %>%
+  DT::datatable()
+```
+
+Note that African countries are shown at the top of the list.
+
+```{r ex2.relevel_factor.2}
 gp_relevel = gp_reorder %>%
   mutate(continent = fct_relevel(continent, "Americas"))
+
 levels(gp_relevel$continent)
 ```
-```{r ex2.plot_relevel}
 
+```{r ex2.relevel_factor.3}
+gp_relevel %>%
+  arrange(continent) %>%
+  DT::datatable()
 ```
+
+Now countries in the Americas are shown first.
+
+### Plot re-leveled `continent`
+
+```{r ex2.plot_relevel.1}
+gp_reorder %>%
+  ggplot(aes(pop, continent, fill = continent)) +
+  geom_density_ridges(alpha = 0.7) +
+  scale_discrete_manual("fill", values = c("red", "green", "blue", "purple")) +
+  scale_x_log10(labels = scales::comma_format())
+```
+
+```{r ex2.plot_relevel.2}
+gp_relevel %>%
+  ggplot(aes(pop, continent, fill = continent)) +
+  geom_density_ridges(alpha = 0.7) +
+  scale_discrete_manual("fill", values = c("green", "red", "blue", "purple")) +
+  scale_x_log10(labels = scales::comma_format())
+```
+
 
 
 
