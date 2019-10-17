@@ -63,7 +63,7 @@ We explore the `continent` variable in the `gapminder` dataset. We first verify 
 class(gapminder$continent)
 ```
 
-We drop the level "Oceania" from `continent` and observe the number of rows and levels before and after the drop.
+We will drop the level "Oceania" from `continent` and observe the number of rows and levels before and after the drop.
 
 ```{r ex2.drop_levels.1}
 nrow(gapminder)
@@ -92,7 +92,7 @@ After the drop, there are now `r nrow(gp_drop_ocn)` rows and `r nlevels(gp_drop_
 
 ### Reorder `continent`
 
-We now look to reorder the levels of `continent` based on the trimmed mean (10% off each end) total population in increasing order. We use the `forcats` package in the `tidyverse` library to do so.
+We now look to reorder the levels of `continent` based on the trimmed mean (10% off each end) population in increasing order. We use the `forcats` package in the `tidyverse` library to do so.
 
 ```{r ex2.reorder_levels.1}
 # Define a trimmed mean function with a set trim value
@@ -107,14 +107,17 @@ gp_reorder = gp_drop_ocn %>%
 levels(gp_reorder$continent)
 ```
 
-The levels of `continent` has changed from [`r levels(gp_drop_ocn$continent)`] to [`r levels(gp_reorder$continent)`]. We check the trimmed mean total population to make sure that the new order of levels is correct.
+The levels of `continent` has changed from [`r levels(gp_drop_ocn$continent)`] to [`r levels(gp_reorder$continent)`]. We check the trimmed mean population to make sure that the new order of levels is correct. We also compare the trimmed mean to the standard mean.
 
 ```{r ex2.reorder_levels.2}
 gp_reorder %>%
   group_by(continent) %>%
-  summarize(trimMeanPop = trimmed.mean(pop)) %>%
+  summarize(trimMeanPop = trimmed.mean(pop),
+            standardMeanPop = mean(pop)) %>%
   knitr::kable()
 ```
+
+We see that using the standard mean would have given us a different order for the levels.
 
 ### Re-level `continent`
 
@@ -153,9 +156,9 @@ gp_reorder %>%
   geom_density_ridges(alpha = 0.7) +
   scale_discrete_manual("fill", values = c("red", "green", "blue", "purple")) +
   scale_x_log10(labels = comma_format()) +
-  labs(title = "Total Population by Continent",
+  labs(title = "Density Plot of Population by Continent",
        x = "Total Population",
-       y = "Continent") +
+       y = "") +
   theme_bw() +
   theme(legend.position = "none")
 ```
@@ -168,9 +171,9 @@ gp_relevel %>%
   geom_density_ridges(alpha = 0.7) +
   scale_discrete_manual("fill", values = c("green", "red", "blue", "purple")) +
   scale_x_log10(labels = comma_format()) +
-  labs(title = "Total Population by Continent",
+  labs(title = "Density Plot of Population by Continent",
        x = "Total Population",
-       y = "Continent") +
+       y = "") +
   theme_bw() +
   theme(legend.position = "none")
 ```
@@ -230,7 +233,7 @@ gp_pop_chng_csv %>%
   knitr::kable()
 ```
 
-We see that although Africa has the smallest mean population and raw growth, it had the greatest growth proportion-wise having almost quadrupled in mean population between (`r min(gapminder$year)`) and (`r max(gapminder$year)`).
+We see that although Africa has the smallest mean population and raw growth, it had the greatest growth proportion-wise having almost quadrupled in mean population between `r min(gapminder$year)` and `r max(gapminder$year)`.
 
 In this exercise, we showed that while we were able to successfully write the dataset to CSV and read it back, we had to manually cast `continent` back to a factor.
 
@@ -271,7 +274,7 @@ new_plot = gapminder %>%
   geom_line(aes(color = continent), size = 1.5, alpha = 0.5) +
   geom_point(aes(color = continent), size = 5, alpha = 0.5) +
   scale_y_log10() +
-  labs(title = "Mean Country Population per Year by Continent",
+  labs(title = "Mean Country Population by Continent",
        x = "Year",
        y = "Mean Population (millions)",
        color = "Continent") +
@@ -287,7 +290,7 @@ We compare the two plots side-by-side below. The changes made to the old plot in
 * re-labeling the y-axis so that the labels are cleaner and easier to read
 * adding points to the lines to make it visually clear where the actual data points are
 * making the lines and points semi-transparent so that crossing and overlapping lines are still visible
-* replacing the default grey theme with something more appealing
+* replacing the default grey theme with something more appealing and less distracting
 
 While the new plot remains simple, these changes make the new plot easier to read and visually more appealing.
 
